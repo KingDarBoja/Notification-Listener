@@ -58,6 +58,17 @@ class NotificationListState extends State<NotificationList> {
   final List<NotificationEvent> _notification = <NotificationEvent>[];
 
   @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(
@@ -76,7 +87,8 @@ class NotificationListState extends State<NotificationList> {
             final int index = i ~/ 2;
             
             return _buildRow(_notification[index]);
-          }
+          },
+          itemCount: _notification.length,
         ),
       ),
     );
