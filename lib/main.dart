@@ -11,15 +11,75 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
+  // TODO: Asyncronous update
+  // List<NotificationEvent> _data = new List();
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   initPlatformState();
+  // }
+
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  // }
+
+  // // Platform messages are asynchronous, so we initialize in an async method.
+  // Future<void> initPlatformState() async {
+  //   Notifications notifications = new Notifications();
+  //   StreamSubscription<NotificationEvent> events;
+  //   events = notifications.noiseStream.listen(onData);
+  // }
+
+  // void onData(NotificationEvent event) {
+  //   print(event.toString());
+  //   _data.add(event);
+  // }
 
   @override
-  void dispose() {
-    super.dispose();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'NotifyMe',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+      ),
+      home: new NotificationList(),
+    );
+  }
+}
+
+class NotificationList extends StatefulWidget {
+  @override
+  NotificationListState createState() => new NotificationListState();
+}
+
+class NotificationListState extends State<NotificationList> {
+  final List<NotificationEvent> _notification = <NotificationEvent>[];
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: AppBar(
+        title: Text('NotifyMe'),
+      ),
+      body: Center(
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16.0),
+          itemBuilder: (BuildContext context, int i) {
+            // Add a one-pixel-high divider widget before each row
+            // in the ListView.
+            if (i.isOdd) return Divider();
+
+            // This calculates the actual number of items
+            // in the ListView, minus the divider widgets.
+            final int index = i ~/ 2;
+            
+            return _buildRow(_notification[index]);
+          }
+        ),
+      ),
+    );
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -29,16 +89,15 @@ class _MyAppState extends State<MyApp> {
     events = notifications.noiseStream.listen(onData);
   }
 
-  void onData(NotificationEvent event) => print(event.toString());
+  void onData(NotificationEvent event) {
+    print(event.toString());
+    _notification.add(event);
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-      ),
+  Widget _buildRow(NotificationEvent notificationItem) {
+    return ListTile(
+      title: Text(notificationItem.packageName),
+      subtitle: Text(notificationItem.timeStamp.toString()),
     );
   }
 }
