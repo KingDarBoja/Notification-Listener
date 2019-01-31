@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'NotifyMe',
       theme: ThemeData(
-        primarySwatch: Colors.purple,
+        primarySwatch: Colors.red,
       ),
       home: new NotificationList(),
     );
@@ -98,12 +98,12 @@ class NotificationListState extends State<NotificationList> {
   Future<void> initPlatformState() async {
     Notifications notifications = new Notifications();
     StreamSubscription<NotificationEvent> events;
-    events = notifications.noiseStream.listen(onData);
+    events = notifications.stream.listen(onData);
   }
 
   void onData(NotificationEvent event) {
-    print(event.toString());
     _notification.add(event);
+    this.setState(() {});
   }
 
   Widget _buildRow(NotificationEvent notificationItem) {
