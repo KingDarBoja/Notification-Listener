@@ -11,32 +11,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // TODO: Asyncronous update
-  // List<NotificationEvent> _data = new List();
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   initPlatformState();
-  // }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  // }
-
-  // // Platform messages are asynchronous, so we initialize in an async method.
-  // Future<void> initPlatformState() async {
-  //   Notifications notifications = new Notifications();
-  //   StreamSubscription<NotificationEvent> events;
-  //   events = notifications.noiseStream.listen(onData);
-  // }
-
-  // void onData(NotificationEvent event) {
-  //   print(event.toString());
-  //   _data.add(event);
-  // }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -56,6 +30,7 @@ class NotificationList extends StatefulWidget {
 
 class NotificationListState extends State<NotificationList> {
   final List<NotificationEvent> _notification = <NotificationEvent>[];
+  StreamSubscription<NotificationEvent> _subscription;
 
   @override
   void initState() {
@@ -66,6 +41,7 @@ class NotificationListState extends State<NotificationList> {
   @override
   void dispose() {
     super.dispose();
+    _subscription.cancel();
   }
 
   @override
@@ -85,7 +61,7 @@ class NotificationListState extends State<NotificationList> {
             // This calculates the actual number of items
             // in the ListView, minus the divider widgets.
             final int index = i ~/ 2;
-            
+
             return _buildRow(_notification[index]);
           },
           itemCount: _notification.length,
@@ -96,9 +72,13 @@ class NotificationListState extends State<NotificationList> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    Notifications notifications = new Notifications();
-    StreamSubscription<NotificationEvent> events;
-    events = notifications.stream.listen(onData);
+    Notifications _notifications = new Notifications();
+
+    try {
+      _subscription = _notifications.notificationStream.listen(onData);
+    } on NotificationException catch (exception) {
+      print(exception);
+    }
   }
 
   void onData(NotificationEvent event) {
@@ -108,7 +88,7 @@ class NotificationListState extends State<NotificationList> {
 
   Widget _buildRow(NotificationEvent notificationItem) {
     return ListTile(
-      title: Text(notificationItem.packageName),
+      title: Text(notificationItem.packageName + '\n' + notificationItem.packageMessage),
       subtitle: Text(notificationItem.timeStamp.toString()),
     );
   }
